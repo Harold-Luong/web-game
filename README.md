@@ -4,11 +4,13 @@ Game web 2D co-op vượt dungeon dành cho đội 4 người: **Đỡ đòn (Ta
 
 **Trạng thái: chuẩn bị thiết kế, chỉ có tài liệu; chưa triển khai code.** Chưa có ứng dụng chạy được, dependency, lệnh cài đặt, build hoặc test.
 
+Đã có [GDD v0.1 — đầu ra Phase 00](docs/design/GDD.md). Người dùng đã chốt top-down trên máy tính với bàn phím/chuột và luật gục/cứu đồng đội, cả đội gục thì thua. Các đề xuất còn lại được phân biệt trong sổ quyết định của GDD.
+
 ## Nguồn và cách đọc
 
 Tài liệu được tổng hợp từ [cuộc trò chuyện “Xây dựng web game 2D”](https://chatgpt.com/share/6aa69e1d-b684-83ec-ae04-07e145234c7f), đọc ngày 13/09/2026, và yêu cầu hiện tại chỉ viết tài liệu.
 
-- **Yêu cầu đã xác nhận:** game web 2D; đội 4 người với 4 vai trò nêu trên; cùng vượt ải; boss có điểm yếu để mỗi vai trò phát huy sức mạnh; chia công việc theo phase để review và giao cho AI từng bước.
+- **Yêu cầu đã xác nhận:** game web 2D; đội 4 người với 4 vai trò nêu trên; cùng vượt ải; boss có điểm yếu để mỗi vai trò phát huy sức mạnh; chia công việc theo phase để review và giao cho AI từng bước. Trong Phase 00, người dùng chọn top-down trên máy tính, bàn phím/chuột; hết HP thì gục, đồng đội có thể cứu, cả đội gục thì thua.
 - **Đề xuất làm cơ sở review:** stack, thứ tự triển khai, Ancient Golem, danh sách skill, thiết kế dungeon và kiến trúc bên dưới được tổng hợp từ các câu trả lời trong cuộc trò chuyện. Đây chưa phải toàn bộ quyết định đã được người dùng chốt.
 - **Chưa chốt:** được tập hợp ở cuối tài liệu. Không tự biến gợi ý thành yêu cầu bắt buộc.
 
@@ -18,6 +20,7 @@ Cuộc trò chuyện có nhiều roadmap. Tài liệu này dùng bản tổng th
 | --- | --- |
 | [README.md](README.md) | Bối cảnh sản phẩm, phạm vi, kiến trúc dự kiến, roadmap và các điểm cần quyết định |
 | [AGENTS.md](AGENTS.md) | Quy tắc làm việc cho AI agent, giới hạn từng phase và cách kiểm chứng kết quả |
+| [GDD v0.1](docs/design/GDD.md) | Thiết kế sản phẩm Phase 00: vòng chơi, đội hình, thắng/thua, phạm vi MVP và sổ quyết định |
 | `docs/phases/phase-00-…md` đến `phase-60-…md` | 61 file giao việc riêng; mở từng file từ bảng roadmap bên dưới |
 
 ## Định hướng sản phẩm
@@ -26,7 +29,7 @@ Cuộc trò chuyện có nhiều roadmap. Tài liệu này dùng bản tổng th
 
 Vòng chơi dự kiến: vào lobby → chọn class và lập đội → vào dungeon → dọn quái → mini boss → boss chính → thắng/thua. Khi đến giai đoạn progression, bổ sung nhận thưởng → nâng cấp → thử dungeon khó hơn.
 
-Tên repository hiện tại là `web-game`. **Dungeon Bonds** là tên được gợi ý trong nguồn, chưa phải tên sản phẩm chính thức. Góc nhìn top-down và phong cách fantasy cartoon/pixel-ish cũng đang là đề xuất.
+Tên repository hiện tại là `web-game`. **Dungeon Bonds** là tên được gợi ý trong nguồn, chưa phải tên sản phẩm chính thức. Top-down trên máy tính với bàn phím/chuột đã được chọn; phong cách fantasy cartoon/pixel-ish vẫn là đề xuất.
 
 ### Vai trò và phối hợp
 
@@ -92,6 +95,7 @@ Chưa khóa phiên bản Node.js, Java, Phaser, Spring Boot hoặc công cụ bu
 - Skill có định nghĩa riêng cho cooldown, cast time, tầm đánh, hệ số damage và hitbox. Hitbox là vùng gây tác động; hurtbox là vùng nhận tác động.
 - Damage đi qua một pipeline: hành động → phát hiện hit → yêu cầu damage → tính kết quả → cập nhật HP → phát sự kiện. Công thức khởi điểm đề xuất: sát thương bằng giá trị lớn hơn giữa sát thương tối thiểu và attack nhân hệ số skill trừ defense. Quy tắc làm tròn, sát thương tối thiểu và tương tác shield chưa chốt.
 - Các stat dự kiến: HP, Attack, Defense, MoveSpeed, AttackSpeed, CooldownReduction. Trạng thái tham khảo: NORMAL, STUN, SLOW, SHIELDED, INVULNERABLE, STAGGERED, DEAD; cần xác định cách kết hợp và ưu tiên trong thiết kế combat.
+- GDD bổ sung yêu cầu gục/cứu đồng đội đã được xác nhận: Phase 01 phải phân biệt trạng thái gục với chết/kết thúc lượt; mô phỏng team ở Phase 20 và server combat/dungeon ở Phase 33–36 phải hỗ trợ luật này. Prototype Warrior solo vẫn có thể thua ngay khi hết HP theo đề xuất v0.1.
 - Animation thể hiện hành động; thời điểm hiệu lực của hit phải khớp thao tác. Ở multiplayer, server quyết định thời điểm và kết quả combat, không phụ thuộc event animation do client báo về.
 
 ### Multiplayer và dữ liệu
@@ -112,18 +116,18 @@ Hướng đề xuất là sprite sheet: idle, run, attack, hurt, death; skill an
 
 ### Cấu trúc hiện tại và dự kiến
 
-Hiện tại có `README.md`, `AGENTS.md` và **61 file Markdown trong `docs/phases/`** (ngoài metadata Git). Đây đều là tài liệu; chưa có code hoặc ứng dụng chạy được. Các thành phần triển khai dưới đây **chỉ là cấu trúc dự kiến**, chưa được tạo:
+Hiện tại có `README.md`, `AGENTS.md`, **61 file Markdown trong `docs/phases/`** và [docs/design/GDD.md](docs/design/GDD.md) (ngoài metadata Git). Đây đều là tài liệu; chưa có code hoặc ứng dụng chạy được. Các thành phần triển khai dưới đây **chỉ là cấu trúc dự kiến**, chưa được tạo:
 
 | Đường dẫn dự kiến | Nội dung |
 | --- | --- |
 | `game-client/src/` | scenes, entities, combat, skills, enemies, bosses, dungeon, ui, config; network khi đến nhóm E |
 | `game-client/` — thư mục asset | Sprite, tilemap, hiệu ứng, âm thanh; chọn vị trí phục vụ asset khi cấu hình Vite |
 | `game-server/` | room, player, game, combat, boss, network; auth và persistence thêm ở nhóm G |
-| `docs/design/`, `docs/network/`, `docs/architecture/` và các thư mục tài liệu theo lĩnh vực | Đầu ra thiết kế/protocol/kiến trúc sẽ được viết khi thực hiện phase tương ứng; hiện chưa có |
+| Các tài liệu COMBAT/CLASSES/BOSS-GOLEM trong `docs/design/`, cùng `docs/network/` và `docs/architecture/` | Đầu ra các phase sau; hiện mới có GDD của Phase 00 |
 
 ## Roadmap tổng thể
 
-**Tiến độ:** mới có tài liệu tổng hợp để review; Phase 0–3 chưa được coi là hoàn tất thiết kế, Phase 4–60 chưa triển khai. Có roadmap không đồng nghĩa với đã cho phép bắt đầu code.
+**Tiến độ:** Phase 00 đã `DONE` ở mức tài liệu với [GDD v0.1](docs/design/GDD.md), checklist và walkthrough trên giấy. Phase 01–60 vẫn `NOT_STARTED`; milestone M0 chưa hoàn tất vì còn thiết kế combat, class và boss. Các đề xuất trong GDD chưa được xác nhận vẫn cần review; chưa có code hoặc kiểm chứng gameplay.
 
 Mỗi phase là một đơn vị giao việc, cần mục tiêu, phạm vi, phần loại trừ, ràng buộc kiến trúc, đầu ra, tiêu chí nghiệm thu và cách kiểm chứng. Thứ tự mặc định theo bảng; thay đổi phụ thuộc cần có lý do. Redis và scaling là các phase có điều kiện.
 
@@ -133,10 +137,10 @@ Nhấn tên phase trong các bảng bên dưới để mở file riêng. Mỗi f
 
 - **Review tài liệu:** yêu cầu “Chỉ rà soát/cập nhật tài liệu Phase N, chưa triển khai code”.
 - **Thực hiện phase:** sao chép mục “Lệnh giao việc cho AI” trong file đã chọn. Phase 0–3 tạo đầu ra thiết kế; Phase 4 trở đi chỉ triển khai khi được giao.
-- **Theo dõi kết quả:** cập nhật trạng thái và báo cáo ngay trong file phase, không đánh dấu xong chỉ vì đã có đặc tả. Tất cả phase hiện là `NOT_STARTED`.
+- **Theo dõi kết quả:** cập nhật trạng thái và báo cáo ngay trong file phase, không đánh dấu xong chỉ vì đã có đặc tả. Phase 00 đã `DONE` ở mức tài liệu; Phase 01–60 còn `NOT_STARTED`.
 - **Phụ thuộc:** mở liên kết phase cần có trước và kiểm tra đầu ra thật; không tự làm phase trước để bù phần còn thiếu. Một số việc như Redis/scaling/nội dung mới có thể `DEFERRED` khi chưa có nhu cầu.
 
-Ví dụ mở đầu bằng [Phase 00 — Game Design Document](docs/phases/phase-00-game-design-document.md). Việc có 61 file giao việc không đồng nghĩa đã hoàn thành Phase 0–60.
+Có thể đọc đầu ra và báo cáo tại [Phase 00 — Game Design Document](docs/phases/phase-00-game-design-document.md). Bước thiết kế tiếp theo là Phase 01 khi được giao; việc có 61 file giao việc không đồng nghĩa đã hoàn thành toàn bộ roadmap.
 
 ### A — Thiết kế trước khi code
 
@@ -269,8 +273,8 @@ UI cơ bản, telegraph, validation và kiểm chứng phải có ngay khi gamep
 
 | Chủ đề | Cần chốt trước khi nào |
 | --- | --- |
-| Tên game, góc nhìn, desktop/mobile, bàn phím/chuột hay cảm ứng | Phase 0; top-down và desktop là đề xuất ban đầu |
-| Mỗi đội bắt buộc đủ một người mỗi class, xử lý trùng class/thiếu người, chết/revive/team wipe | Thiết kế ở Phase 0–3, hiện thực theo phase liên quan |
+| Tên game, phím cụ thể, targeting và browser kiểm thử | Tên chưa chốt; top-down trên máy tính, bàn phím/chuột đã xác nhận trong Phase 00; chi tiết input/browser ở Phase 01/04 |
+| Quy tắc đúng một người mỗi class, trùng class/thiếu người, chi tiết cứu đồng đội | Luật gục/cứu và team wipe đã xác nhận; GDD có đề xuất đội hình, còn chi tiết revive ở Phase 01 và boss thiếu vai trò ở Phase 03 |
 | Số skill/passive, mana/tài nguyên, cooldown, damage, targeting, friendly fire, va chạm đồng đội | Phase 1–2 |
 | Rune/crystal có bắt buộc đúng class, thứ tự cơ chế, reset và timeout, điều kiện thắng/thua | Phase 3 |
 | Thời lượng dungeon, số wave/quái, checkpoint và cách chơi lại | Phase 0 và thiết kế chi tiết trước Phase 21–25 |
@@ -280,4 +284,4 @@ UI cơ bản, telegraph, validation và kiểm chứng phải có ngay khi gamep
 | JWT/session, phân phối loot cá nhân/chung, schema, slot trang bị và cách tăng level | Trước các phase nhóm G tương ứng |
 | Ngân sách vận hành, nơi deploy và nhu cầu Redis/multi-instance | Trước các phase nhóm H tương ứng |
 
-Trong giai đoạn hiện tại, bước tiếp theo phù hợp là review Phase 0–3 bằng tài liệu. Chỉ bắt đầu triển khai khi người dùng giao công việc có code; khi đó tuân theo [AGENTS.md](AGENTS.md) và phạm vi phase được giao.
+Phase 00 đã hoàn thành đầu ra tài liệu. Bước tiếp theo khi được giao là [Phase 01 — Combat design](docs/phases/phase-01-combat-design.md), dựa trên GDD và luật gục/cứu đã xác nhận. Chỉ bắt đầu code khi người dùng giao công việc triển khai; khi đó tuân theo [AGENTS.md](AGENTS.md) và phạm vi phase được giao.
